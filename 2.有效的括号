@@ -15,4 +15,24 @@
 
   时间复杂度为O（N），空间复杂度为O（N）。
   
- 具体代码如下“
+ 具体代码如下
+ 
+ class Solution(object):
+    def isValid(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        # stack
+        s_list = list(s)
+        s_stack = []
+        match = {'}':'{',']':'[',')':'('}
+        for i in s_list:
+            if match.has_key(i) is False:
+                s_stack.append(i)
+            else:
+                if len(s_stack)==0 or s_stack.pop()!=match[i]:
+                    return False
+        if len(s_stack)!=0:
+            return False
+        return True
