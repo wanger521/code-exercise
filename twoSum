@@ -1,0 +1,40 @@
+# 乐扣题目描述
+给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
+
+你可以按任意顺序返回答案。
+
+输入：nums = [2,7,11,15], target = 9
+输出：[0,1]
+解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
+
+#解题思路
+    首先，最容易想到的变是使用两个for循环来遍历寻找，我第一次实现便用的这个方法，好在思路简单，但是试行用时太长了。
+于是，看题解，发现是寻找第二个数的时间太长了，于是使用哈希表记录，数值为x的值在nuns的哪个位置，这样只用遍历一次列表，
+查找哈希表看需要的第二个数是否出现在之前遍历过的nums中，执行时间缩小了百倍，效率提升十分明显。
+
+具体代码如下：
+class Solution(object):
+    def twoSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+    # hash
+        hashTable = dict()
+        for i, num in enumerate(nums):
+            target_x = target - num
+            if hashTable.has_key(target_x):
+                return [hashTable[target_x],i]
+            hashTable[num] = i
+
+
+    # two for method
+    def twoSumFor(self, nums, target):
+        num_len = len(nums)
+        for i in range(num_len-1):
+            for j in range(i+1,num_len):
+                if nums[i]+nums[j] == target:
+                    return [i,j]
