@@ -1,0 +1,62 @@
+# 题目描述 21
+You are given the heads of two sorted linked lists list1 and list2.
+
+Merge the two lists in a one sorted list. The list should be made by splicing together the nodes of the first two lists.
+
+Return the head of the merged linked list.
+
+Input: list1 = [1,2,4], list2 = [1,3,4]
+Output: [1,1,2,3,4,4]
+
+#解题思路
+创建一个新列表，通过依次比较l1和l2的下一个点，然后把较小的放入新列表
+
+#题目代码
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution(object):
+    def mergeTwoLists(self, list1, list2):
+        """
+        :type list1: Optional[ListNode]
+        :type list2: Optional[ListNode]
+        :rtype: Optional[ListNode]
+        """
+        results = ListNode(val=0,next=None)# head
+        list1 = list1
+        list2_ = list2
+        arrow = results
+        while list1!=None or list2!=None:
+            if list1 == None:
+                arrow.next = list2
+                return results.next
+            elif list2 == None:
+                arrow.next = list1
+                return results.next
+            else:
+                if list1.val <= list2.val:
+                    arrow.next = list1
+                    list1 = list1.next
+                else:
+                    arrow.next = list2
+                    list2 = list2.next
+                arrow = arrow.next
+        return results.next
+
+#改善方向
+我的算法内存消耗大，虽然速度快，可以通过递归操作简化代码，减小内存消耗，仅仅改变指针
+
+改善代码
+class Solution:
+    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
+        if not l1: return l2  # 终止条件，直到两个链表都空
+        if not l2: return l1
+        if l1.val <= l2.val:  # 递归调用
+            l1.next = self.mergeTwoLists(l1.next,l2)
+            return l1
+        else:
+            l2.next = self.mergeTwoLists(l1,l2.next)
+            return l2
+
