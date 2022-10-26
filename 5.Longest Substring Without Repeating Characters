@@ -1,0 +1,76 @@
+乐扣第三题 Longest Substring Without Repeating Characters
+# 题目描述
+Given a string s, find the length of the longest substring without repeating characters.
+
+Input: s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with the length of 3.
+
+0 <= s.length <= 5 * 104
+s consists of English letters, digits, symbols and spaces.
+
+# 解题思路
+首先把string拆成list，然后遍历每个element，查看其是否与新的子串有重复元素。
+字串的更新，我总是保留最新的子串，哪怕其与上一个子串是相等的长度，这可能是导致我效率较低的原因。（时间和空间复杂度都很高）
+如果新的子串小于旧子串，则先让新子串继续更新，如果大于等于了，则让旧子串更新为新子串。
+
+#代码
+class Solution(object):
+    def lengthOfLongestSubstring(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        s_list= list(s)
+        if len(s_list)==0:
+            return 0
+        sub = list(s_list[0])  
+        sub_index = 0    
+        new = []
+        for i in range(1,len(s_list)):
+            if sub_index+1 == i:
+                new = self.delete(sub, s_list[i])
+            else:
+                new = self.delete(new, s_list[i])
+            if len(new)<=len(sub):
+                new.append(s_list[i])                    
+            if len(new)>=len(sub):
+                sub = new
+                sub_index = i             
+        return len(sub)
+
+    def delete(self, sub, element):
+        remain = []
+        for i in range(len(sub)):
+            if element == sub[i]:
+                if i!=len(sub)-1:
+                    remain = sub[i+1:]
+                return remain           
+        return sub
+
+
+#优化方法
+用set 哈希表来判断element是否在子串中，用指针来滑动，节省了空间，也加快了速度，尽快相当于做两次循环。
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        # 哈希集合，记录每个字符是否出现过
+        occ = set()
+        n = len(s)
+        # 右指针，初始值为 -1，相当于我们在字符串的左边界的左侧，还没有开始移动
+        rk, ans = -1, 0
+        for i in range(n):
+            if i != 0:
+                # 左指针向右移动一格，移除一个字符
+                occ.remove(s[i - 1])
+            while rk + 1 < n and s[rk + 1] not in occ:
+                # 不断地移动右指针
+                occ.add(s[rk + 1])
+                rk += 1
+            # 第 i 到 rk 个字符是一个极长的无重复字符子串
+            ans = max(ans, rk - i + 1)
+        return ans
+
+作者：LeetCode-Solution
+链接：https://leetcode.cn/problems/longest-substring-without-repeating-characters/solution/wu-zhong-fu-zi-fu-de-zui-chang-zi-chuan-by-leetc-2/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
