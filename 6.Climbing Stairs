@@ -1,0 +1,41 @@
+乐扣 第70题 简单
+
+# 题目描述
+You are climbing a staircase. It takes n steps to reach the top.
+
+Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+1 <= n <= 45
+
+# 题目思路
+采用动态规划，因为当前楼梯爬的组合次数为往前一阶和往前两阶，所以f(x)=f(x-1)+f(x-2),
+自然的会想到采用递归的方法，但是这个方法超出了时间限制，可见递归其实是比较耗费时间的。
+那我们最后采用list循环的方法，不断累加前两个元素得到新元素。
+# 题目解答
+class Solution(object):
+    def climbStairs(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        if n==1:
+            return 1
+        list_n = [1,2]
+        for i in range(2, n):
+            list_n.append(list_n[i-1]+list_n[i-2])
+        return list_n[-1]
+
+
+
+        # if n > 2:
+        #     steps = self.climbStairs( n-1) + self.climbStairs(n-2)
+        # elif n == 2:
+        #     return 2
+        # elif n == 1:
+        #     return 1
+        # else:
+        #     return 0
+        # return steps
+        
+# 优化
+因为只会用到前两个元素，所以其实数组保持在长度三就够用了，每次更新就更新第三个元素，然后不断前移。
