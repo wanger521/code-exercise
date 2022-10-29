@@ -1,0 +1,85 @@
+乐扣 第四题 困难
+# 题目描述
+Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
+
+The overall run time complexity should be O(log (m+n)).
+
+Input: nums1 = [1,2], nums2 = [3,4]
+Output: 2.50000
+Explanation: merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.
+
+# 题目思路
+log量级的计算复杂度，考虑二分法，自己没有想出来，看的官方题解。
+把这个问题转换为找第k小值的问题，k是我们需要找的两数组中位数，然后比较nums1[k/2-1]与nums2[k/2-1],把小的那一半丢掉，因为最多有k-2个数字小于这个，
+肯定不是中位数，所以可以直接丢掉。用offset来表示数组被丢掉后，新的起始位置，然后把k减去丢掉的部分，这里需要处理一下比较的位置超出数组界限的问题，
+可以把超出界限的比较位置设为数组末尾，但这样要额外记录move掉的多少。
+
+offset超出界限时，可以直接找下个数组的第k小
+如果k=1，直接比较两个数组offset位置的值
+
+最开始奇偶的时候，要分情况讨论，奇数只找一个，偶数找两个。
+
+
+# 题目代码
+
+class Solution(object):
+    def findMedianSortedArrays(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: float
+        """
+
+        m = len(nums1)
+        n = len(nums2)
+        k = (m + n) / 2 
+        r = (m + n) % 2 # 判断奇偶
+        if m == 0 :
+            if r == 0:
+                return float(nums2[k-1] + nums2[k]) / 2
+            else:
+                return nums2[k]
+        elif n == 0:
+            if r == 0:
+                return float(nums1[k-1] + nums1[k]) / 2
+            else:
+                return nums1[k]
+        median1, offset1, offset2 = self.findKSmall(nums1, nums2, 0, 0, k)
+        median2, _, _ = self.findKSmall(nums1, nums2, offset1, offset2, 1)
+        if  r == 0:
+            return float(median1 + median2) / 2
+        else:
+            return median2
+
+        
+
+    def findKSmall(self, nums1, nums2, offset1, offset2, k):
+        if offset1 >= len(nums1):
+            return nums2[offset2+k-1], offset1, offset2+k
+        elif offset2 >= len(nums2):
+            return nums1[offset1+k-1], offset1+k, offset2
+        if k ==1 :
+            if nums1[offset1] <= nums2[offset2]:
+                return nums1[offset1], offset1+1, offset2
+            else: 
+                return nums2[offset2], offset1, offset2+1
+        c = k/2 - 1
+        c1 = c + offset1
+        c2 = c + offset2
+
+        if c1 >= len(nums1):
+            c1 = len(nums1) -1 
+        elif c2 >= len(nums2):
+            c2 = len(nums2) - 1
+
+        move = c + 1
+        if nums1[c1] <= nums2[c2]:
+            move = c1-offset1+1
+            offset1 = c1 + 1            
+        else:
+            move = c2-offset2+1
+            offset2 = c2 + 1
+        k = k - move
+        return self.findKSmall(nums1, nums2, offset1, offset2, k)
+# 优化
+题目的时间耗费较高，但是内存消耗少，说明递归的用法可能还是有些费时间，可以直接手搓循环可能比较快
